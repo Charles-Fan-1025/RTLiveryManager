@@ -1,0 +1,1 @@
+pyinstaller --onefile --windowed --icon .\RTL_icon.ico -n RTLiveryManager --add-data ".\RTL_icon.ico;." --add-data ".\RTL_icon.png;." --add-data "locales;locales" .\FrontEnd.py
