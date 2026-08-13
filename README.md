@@ -2,6 +2,8 @@
 
 一款用于 `走ル列車 | Running Train` 的材质管理工具。
 
+![demo](./manual/assets/livery_management.png)
+
 ## 功能
 
 - 涂装管理
@@ -14,7 +16,7 @@
 
 ## 使用说明
 
-见 [使用说明]()
+见 [使用说明](https://github.com/Charles-Fan-1025/RTLiveryManager/blob/master/manual/manual.md)
 
 ## 目录
 
