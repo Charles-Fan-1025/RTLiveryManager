@@ -11,6 +11,7 @@ from PIL import Image, ImageTk
 
 import FileManage as fm
 from ImageProcess import process_livery_image
+from SteamInteract import launch_game as open_steam_game
 
 
 APP_DIR = Path(__file__).resolve().parent
@@ -121,6 +122,7 @@ class LiveryManagerApp(tk.Tk):
         self.unloaded_slots: dict[str, set[int]] = {
             model: set() for model in fm.SUPPORTED_MODELS
         }
+        self.dirty_models: set[str] = set()
         self.slot_image_labels: dict[tuple[str, int], ttk.Label] = {}
         self.slot_text_labels: dict[tuple[str, int], ttk.Label] = {}
         self.library_frames: dict[str, ttk.Frame] = {}
@@ -154,6 +156,14 @@ class LiveryManagerApp(tk.Tk):
         self._build_manage_tab()
         self._build_edit_tab()
         self._build_settings_tab()
+
+        bottom_bar = ttk.Frame(self, padding=(10, 0, 10, 10))
+        bottom_bar.grid(row=1, column=0, sticky="ew")
+        ttk.Button(
+            bottom_bar,
+            text=self.t("button_launch_game"),
+            command=self.launch_game,
+        ).pack(side="right")
 
     def _build_manage_tab(self) -> None:
         self.manage_tab.columnconfigure(0, weight=1)
@@ -404,7 +414,8 @@ class LiveryManagerApp(tk.Tk):
     def refresh_all(self) -> None:
         self.photo_refs.clear()
         for model in fm.SUPPORTED_MODELS:
-            self.load_slots_from_game(model)
+            if model not in self.dirty_models:
+                self.load_slots_from_game(model)
             self.refresh_slots(model)
             self.refresh_library(model)
 
@@ -486,6 +497,7 @@ class LiveryManagerApp(tk.Tk):
     def unload_slot(self, model: str, slot_index: int) -> None:
         self.slot_assignments[model][slot_index] = None
         self.unloaded_slots[model].add(slot_index)
+        self.dirty_models.add(model)
         self.refresh_slots(model)
 
     def mount_first_empty(self, record: dict) -> None:
@@ -501,6 +513,7 @@ class LiveryManagerApp(tk.Tk):
         index = available_slots[0]
         self.slot_assignments[model][index] = record["id"]
         self.unloaded_slots[model].discard(index)
+        self.dirty_models.add(model)
         self.refresh_slots(model)
 
     def show_livery_menu(self, event: tk.Event, record: dict) -> None:
@@ -554,6 +567,9 @@ class LiveryManagerApp(tk.Tk):
                 livery_path=dialog.result["livery_path"] or None,
                 thumbnail_path=dialog.result["thumbnail_path"] or None,
             )
+            for model in fm.SUPPORTED_MODELS:
+                if record["id"] in self.slot_assignments[model]:
+                    self.dirty_models.add(model)
             self.refresh_all()
         except Exception as exc:
             messagebox.showerror(self.t("message_edit_failed_title"), str(exc))
@@ -564,10 +580,11 @@ class LiveryManagerApp(tk.Tk):
         try:
             fm.delete_livery(record["id"])
             for model in fm.SUPPORTED_MODELS:
-                self.slot_assignments[model] = [
-                    None if item == record["id"] else item
-                    for item in self.slot_assignments[model]
-                ]
+                for slot_index, item in enumerate(self.slot_assignments[model]):
+                    if item == record["id"]:
+                        self.dirty_models.add(model)
+                        self.slot_assignments[model][slot_index] = None
+                        self.unloaded_slots[model].add(slot_index)
             self.refresh_all()
         except Exception as exc:
             messagebox.showerror(self.t("message_delete_failed_title"), str(exc))
@@ -594,10 +611,36 @@ class LiveryManagerApp(tk.Tk):
                     fm.install_livery_to_game(livery_id, slot_index)
                 elif slot_index in self.unloaded_slots[model]:
                     fm.clear_game_livery_slot(model, slot_index)
+            self.dirty_models.discard(model)
             messagebox.showinfo(self.t("message_warning_title"), self.t("message_apply_done", model=model))
             self.refresh_all()
         except Exception as exc:
             messagebox.showerror(self.t("message_apply_failed_title"), str(exc))
+
+    def launch_game(self) -> None:
+        if self.dirty_models:
+            models = "、".join(sorted(self.dirty_models))
+            should_continue = messagebox.askyesno(
+                self.t("message_unsaved_changes_title"),
+                self.t("message_unsaved_changes_body", models=models),
+                parent=self,
+            )
+            if not should_continue:
+                return
+
+        try:
+            if not open_steam_game():
+                messagebox.showerror(
+                    self.t("message_launch_game_failed_title"),
+                    self.t("message_launch_game_failed_body"),
+                    parent=self,
+                )
+        except Exception as exc:
+            messagebox.showerror(
+                self.t("message_launch_game_failed_title"),
+                str(exc),
+                parent=self,
+            )
 
     def import_from_game(self) -> None:
         if not fm.get_game_path():
