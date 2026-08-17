@@ -12,6 +12,7 @@ from PIL import Image, ImageTk
 import FileManage as fm
 from ImageProcess import process_livery_image
 from SteamInteract import launch_game as open_steam_game
+from SteamInteract import locate_game_folder
 
 
 APP_DIR = Path(__file__).resolve().parent
@@ -131,6 +132,8 @@ class LiveryManagerApp(tk.Tk):
         self.current_model = tk.StringVar(value=fm.SUPPORTED_MODELS[0])
         self.game_path_var = tk.StringVar(value=fm.get_game_path())
         self.language_var = tk.StringVar(value=self.locale.language)
+        self.backup_var = tk.StringVar()
+        self.backup_combo: ttk.Combobox | None = None
 
         self._build_ui()
         self._startup_checks()
@@ -278,23 +281,56 @@ class LiveryManagerApp(tk.Tk):
             padx=8,
         )
         ttk.Button(self.settings_tab, text=self.t("button_choose"), command=self.choose_game_path).grid(row=0, column=2)
-        ttk.Button(self.settings_tab, text=self.t("button_save"), command=self.save_game_path).grid(row=0, column=3, padx=(8, 0))
+        ttk.Button(
+            self.settings_tab,
+            text=self.t("button_auto_detect_game_path"),
+            command=self.auto_detect_game_path,
+        ).grid(row=0, column=3, padx=(8, 0))
+        ttk.Button(self.settings_tab, text=self.t("button_save"), command=self.save_game_path).grid(row=0, column=4, padx=(8, 0))
         ttk.Label(self.settings_tab, text=self.t("message_choose_game_path_title", hint="D:\\Program Files\\Steam\\steamapps\\common\\RUNNING TRAIN\\")).grid(
             row=1,
             column=1,
-            columnspan=3,
+            columnspan=4,
             sticky="w",
             padx=8,
             pady=(6, 0),
         )
 
+        ttk.Label(
+            self.settings_tab,
+            text=self.t("label_backup_restore"),
+        ).grid(row=2, column=0, columnspan=5, sticky="w", pady=(18, 0))
+
+        ttk.Button(
+            self.settings_tab,
+            text=self.t("button_backup"),
+            command=self.backup_game_files,
+        ).grid(row=3, column=1, sticky="w", padx=8, pady=(8, 0))
+        ttk.Label(
+            self.settings_tab,
+            text=self.t("message_backup_location", path=self.storage_paths.backup),
+        ).grid(row=3, column=2, columnspan=3, sticky="w", padx=8, pady=(8, 0))
+
+        ttk.Button(
+            self.settings_tab,
+            text=self.t("button_restore"),
+            command=self.restore_game_files,
+        ).grid(row=4, column=1, sticky="w", padx=8, pady=(8, 0))
+        self.backup_combo = ttk.Combobox(
+            self.settings_tab,
+            textvariable=self.backup_var,
+            state="readonly",
+        )
+        self.backup_combo.grid(row=4, column=2, columnspan=3, sticky="ew", padx=8, pady=(8, 0))
+        self.refresh_backup_list()
+
         ttk.Button(
             self.settings_tab,
             text=self.t("button_import_from_game"),
             command=self.import_from_game,
-        ).grid(row=2, column=1, sticky="w", padx=8, pady=(16, 0))
+        ).grid(row=5, column=1, sticky="w", padx=8, pady=(16, 0))
 
-        ttk.Label(self.settings_tab, text=self.t("message_language_setting_label")).grid(row=3, column=0, sticky="w", pady=(16, 0))
+        ttk.Label(self.settings_tab, text=self.t("message_language_setting_label")).grid(row=6, column=0, sticky="w", pady=(16, 0))
         self.language_combo = ttk.Combobox(
             self.settings_tab,
             textvariable=self.language_var,
@@ -302,15 +338,15 @@ class LiveryManagerApp(tk.Tk):
             state="readonly",
             width=16,
         )
-        self.language_combo.grid(row=3, column=1, sticky="w", padx=8, pady=(16, 0))
+        self.language_combo.grid(row=6, column=1, sticky="w", padx=8, pady=(16, 0))
         ttk.Button(
             self.settings_tab,
             text=self.t("button_language_save"),
             command=self.save_language,
-        ).grid(row=3, column=2, sticky="w", pady=(16, 0))
+        ).grid(row=6, column=2, sticky="w", pady=(16, 0))
 
-        ttk.Label(self.settings_tab, text=self.t("label_storage_path")).grid(row=4, column=0, sticky="w", pady=(24, 0))
-        ttk.Label(self.settings_tab, text=str(self.storage_paths.root)).grid(row=4, column=1, columnspan=3, sticky="w", padx=8, pady=(24, 0))
+        ttk.Label(self.settings_tab, text=self.t("label_storage_path")).grid(row=7, column=0, sticky="w", pady=(24, 0))
+        ttk.Label(self.settings_tab, text=str(self.storage_paths.root)).grid(row=7, column=1, columnspan=4, sticky="w", padx=8, pady=(24, 0))
 
     def refresh_texts(self) -> None:
         self.title(self.t("app_title"))
@@ -343,9 +379,15 @@ class LiveryManagerApp(tk.Tk):
 
         if not self.game_path_var.get() and not self.settings.get("editor_only_mode", False):
             choice = GamePathStartupDialog.show(self, self.locale)
-            if choice == "select":
-                self.choose_game_path()
-                self.settings = fm.load_settings()
+            if choice == "full":
+                detected_path = locate_game_folder()
+                if detected_path is not None:
+                    self.game_path_var.set(str(detected_path))
+                    self.save_game_path()
+                    self.settings = fm.load_settings()
+                else:
+                    self.choose_game_path()
+                    self.settings = fm.load_settings()
             elif choice == "editor_only":
                 self.settings["editor_only_mode"] = True
                 fm.save_settings(self.settings)
@@ -370,6 +412,110 @@ class LiveryManagerApp(tk.Tk):
             self.game_path_var.set(selected)
             self.save_game_path()
 
+    def auto_detect_game_path(self) -> None:
+        detected_path = locate_game_folder()
+        if detected_path is None:
+            messagebox.showwarning(
+                self.t("message_auto_detect_failed_title"),
+                self.t("message_auto_detect_failed_body"),
+                parent=self,
+            )
+            return
+
+        self.game_path_var.set(str(detected_path))
+        self.save_game_path()
+
+    def refresh_backup_list(self) -> None:
+        if self.backup_combo is None:
+            return
+
+        backup_names = [path.name for path in fm.list_backups()]
+        self.backup_combo.configure(values=backup_names)
+        if self.backup_var.get() not in backup_names:
+            self.backup_var.set(backup_names[0] if backup_names else "")
+
+    def offer_game_backup(self) -> None:
+        should_backup = messagebox.askyesno(
+            self.t("message_backup_prompt_title"),
+            self.t("message_backup_prompt_body"),
+            parent=self,
+        )
+        if should_backup:
+            self.backup_game_files()
+
+    def backup_game_files(self) -> None:
+        game_path = self.game_path_var.get().strip()
+        if not game_path:
+            messagebox.showwarning(
+                self.t("message_no_game_path_title"),
+                self.t("message_no_game_path_body"),
+                parent=self,
+            )
+            return
+
+        try:
+            backup_path = fm.backup_game_textures(game_path=game_path)
+            messagebox.showinfo(
+                self.t("message_warning_title"),
+                self.t("message_backup_done", path=backup_path),
+                parent=self,
+            )
+            self.refresh_backup_list()
+        except Exception as exc:
+            messagebox.showerror(
+                self.t("message_backup_failed_title"),
+                str(exc),
+                parent=self,
+            )
+
+    def restore_game_files(self) -> None:
+        game_path = self.game_path_var.get().strip()
+        if not game_path:
+            messagebox.showwarning(
+                self.t("message_no_game_path_title"),
+                self.t("message_no_game_path_body"),
+                parent=self,
+            )
+            return
+
+        selected_backup_name = self.backup_var.get().strip()
+        backup_paths = {path.name: path for path in fm.list_backups()}
+        backup_path = backup_paths.get(selected_backup_name)
+        if backup_path is None:
+            messagebox.showwarning(
+                self.t("message_restore_choose_title"),
+                self.t("message_restore_choose_body"),
+                parent=self,
+            )
+            return
+
+        should_restore = messagebox.askyesno(
+            self.t("message_restore_confirm_title"),
+            self.t("message_restore_confirm_body"),
+            parent=self,
+        )
+        if not should_restore:
+            return
+
+        try:
+            restored_path = fm.restore_game_textures(
+                backup_path=backup_path,
+                game_path=game_path,
+            )
+            self.dirty_models.clear()
+            self.refresh_all()
+            messagebox.showinfo(
+                self.t("message_warning_title"),
+                self.t("message_restore_done", path=restored_path),
+                parent=self,
+            )
+        except Exception as exc:
+            messagebox.showerror(
+                self.t("message_restore_failed_title"),
+                str(exc),
+                parent=self,
+            )
+
     def save_game_path(self) -> None:
         try:
             path = self.game_path_var.get().strip()
@@ -379,6 +525,7 @@ class LiveryManagerApp(tk.Tk):
             fm.save_settings(self.settings)
             messagebox.showinfo(self.t("message_warning_title"), self.t("message_settings_saved"))
             self.refresh_all()
+            self.offer_game_backup()
         except Exception as exc:
             messagebox.showerror(self.t("message_settings_failed_title"), str(exc))
 
@@ -887,7 +1034,7 @@ class GamePathStartupDialog(tk.Toplevel):
         frame.grid(row=0, column=0, sticky="nsew")
         ttk.Label(
             frame,
-            text=self.t("message_editor_only_prompt_body", hint=self.t("message_choose_game_path_title", hint="D:\\Program Files\\Steam\\steamapps\\common\\RUNNING TRAIN\\")),
+            text=self.t("message_editor_only_prompt_body"),
             justify="left",
             wraplength=520,
         ).grid(row=0, column=0, columnspan=3, sticky="w")
@@ -895,7 +1042,7 @@ class GamePathStartupDialog(tk.Toplevel):
         button_bar = ttk.Frame(frame)
         button_bar.grid(row=1, column=0, columnspan=3, sticky="e", pady=(16, 0))
         ttk.Button(button_bar, text=self.t("button_editor_only"), command=lambda: self.submit("editor_only")).pack(side="left")
-        ttk.Button(button_bar, text=self.t("button_select_game_path"), command=lambda: self.submit("select")).pack(side="left", padx=(8, 0))
+        ttk.Button(button_bar, text=self.t("button_full_function"), command=lambda: self.submit("full")).pack(side="left", padx=(8, 0))
         ttk.Button(button_bar, text=self.t("button_cancel"), command=lambda: self.submit("cancel")).pack(side="left", padx=(8, 0))
 
         self.transient(parent)

@@ -4,9 +4,11 @@ import hashlib
 import json
 import shutil
 import uuid
+import zipfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from pathlib import PurePosixPath
 from typing import Any
 
 try:
@@ -20,6 +22,7 @@ except ImportError as exc:
 APP_DIR_NAME = "RunningTrainLivery"
 DATA_DIR_NAME = "Data"
 LIVERY_DIR_NAME = "Livery"
+BACKUP_DIR_NAME = "Backup"
 SETTINGS_FILE_NAME = "settings.json"
 LIVERIES_FILE_NAME = "liveries.json"
 
@@ -50,6 +53,7 @@ class StoragePaths:
     root: Path
     data: Path
     livery: Path
+    backup: Path
     settings: Path
     liveries: Path
 
@@ -63,10 +67,12 @@ def get_storage_paths(app_root: str | Path | None = None) -> StoragePaths:
     root = Path(app_root) if app_root is not None else get_documents_dir() / APP_DIR_NAME
     data_dir = root / DATA_DIR_NAME
     livery_dir = root / LIVERY_DIR_NAME
+    backup_dir = root / BACKUP_DIR_NAME
     return StoragePaths(
         root=root,
         data=data_dir,
         livery=livery_dir,
+        backup=backup_dir,
         settings=data_dir / SETTINGS_FILE_NAME,
         liveries=data_dir / LIVERIES_FILE_NAME,
     )
@@ -76,6 +82,7 @@ def initialize_storage(app_root: str | Path | None = None) -> StoragePaths:
     paths = get_storage_paths(app_root)
     paths.data.mkdir(parents=True, exist_ok=True)
     paths.livery.mkdir(parents=True, exist_ok=True)
+    paths.backup.mkdir(parents=True, exist_ok=True)
 
     for model in SUPPORTED_MODELS:
         get_model_library_dir(model, app_root=paths.root).mkdir(parents=True, exist_ok=True)
@@ -421,6 +428,120 @@ def get_configured_textures_root(app_root: str | Path | None = None) -> Path:
     if not game_path:
         raise ValueError("Game path has not been set.")
     return resolve_textures_root(game_path)
+
+
+def resolve_textures_root_for_restore(game_path: str | Path) -> Path:
+    base_path = Path(game_path)
+    if base_path.name.casefold() == "textures":
+        return base_path
+
+    candidates = [
+        base_path / relative
+        for relative in GAME_TEXTURE_RELATIVE_PATHS
+    ]
+    for candidate in candidates:
+        if candidate.is_dir():
+            return candidate
+
+    for candidate in candidates:
+        if candidate.parent.is_dir():
+            return candidate
+
+    return candidates[0]
+
+
+def get_backup_dir(app_root: str | Path | None = None) -> Path:
+    return initialize_storage(app_root).backup
+
+
+def list_backups(app_root: str | Path | None = None) -> list[Path]:
+    backup_dir = get_backup_dir(app_root)
+    return sorted(
+        backup_dir.glob("*.zip"),
+        key=lambda path: path.name,
+        reverse=True,
+    )
+
+
+def backup_game_textures(
+    game_path: str | Path | None = None,
+    app_root: str | Path | None = None,
+) -> Path:
+    textures_root = (
+        resolve_textures_root(game_path)
+        if game_path is not None
+        else get_configured_textures_root(app_root)
+    )
+    backup_dir = get_backup_dir(app_root)
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    backup_path = backup_dir / f"{timestamp}.zip"
+    counter = 1
+    while backup_path.exists():
+        backup_path = backup_dir / f"{timestamp}-{counter}.zip"
+        counter += 1
+
+    with zipfile.ZipFile(
+        backup_path,
+        mode="w",
+        compression=zipfile.ZIP_DEFLATED,
+    ) as archive:
+        for source_path in textures_root.rglob("*"):
+            if source_path.is_file():
+                archive.write(
+                    source_path,
+                    arcname=source_path.relative_to(textures_root).as_posix(),
+                )
+
+    return backup_path
+
+
+def restore_game_textures(
+    backup_path: str | Path,
+    game_path: str | Path | None = None,
+    app_root: str | Path | None = None,
+) -> Path:
+    backup_path = Path(backup_path)
+    if not backup_path.is_file():
+        raise FileNotFoundError(f"Backup file does not exist: {backup_path}")
+
+    if game_path is not None:
+        textures_root = resolve_textures_root_for_restore(game_path)
+    else:
+        configured_game_path = get_game_path(app_root)
+        if not configured_game_path:
+            raise ValueError("Game path has not been set.")
+        textures_root = resolve_textures_root_for_restore(configured_game_path)
+    textures_root = textures_root.resolve()
+    textures_root.mkdir(parents=True, exist_ok=True)
+
+    with zipfile.ZipFile(backup_path, mode="r") as archive:
+        members = archive.infolist()
+        for member in members:
+            relative_path = PurePosixPath(member.filename)
+            if (
+                relative_path.is_absolute()
+                or ".." in relative_path.parts
+                or not relative_path.parts
+            ):
+                raise ValueError(f"Invalid path in backup archive: {member.filename}")
+
+            target_path = (textures_root / Path(*relative_path.parts)).resolve()
+            try:
+                target_path.relative_to(textures_root)
+            except ValueError as exc:
+                raise ValueError(
+                    f"Backup archive contains a path outside the texture folder: {member.filename}"
+                ) from exc
+
+            if member.is_dir():
+                target_path.mkdir(parents=True, exist_ok=True)
+                continue
+
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            with archive.open(member, mode="r") as source, target_path.open("wb") as target:
+                shutil.copyfileobj(source, target)
+
+    return textures_root
 
 
 def validate_slot(slot_index: int) -> int:
