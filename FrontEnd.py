@@ -16,6 +16,7 @@ from SteamInteract import launch_game as open_steam_game
 
 APP_DIR = Path(__file__).resolve().parent
 LOCALES_DIR = APP_DIR / "locales"
+EMPTY_TEMPLATE = APP_DIR / "empty_template"
 DEFAULT_LANGUAGE = "zh-cn"
 CARD_IMAGE_SIZE = (150, 120)
 SLOT_IMAGE_SIZE = (125, 100)
@@ -610,7 +611,7 @@ class LiveryManagerApp(tk.Tk):
                 if livery_id:
                     fm.install_livery_to_game(livery_id, slot_index)
                 elif slot_index in self.unloaded_slots[model]:
-                    fm.clear_game_livery_slot(model, slot_index)
+                    fm.clear_game_livery_slot(model, slot_index, EMPTY_TEMPLATE)
             self.dirty_models.discard(model)
             messagebox.showinfo(self.t("message_warning_title"), self.t("message_apply_done", model=model))
             self.refresh_all()

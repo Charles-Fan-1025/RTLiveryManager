@@ -604,22 +604,21 @@ def find_empty_slot_template(
     model: str,
     game_path: str | Path | None = None,
     app_root: str | Path | None = None,
+    empty_slot_template: str | Path | None = None,
 ) -> tuple[Path, Path] | None:
-    for slot_index in range(GAME_SLOT_COUNT):
-        texture_path, thumbnail_path = get_game_livery_paths(
-            model=model,
-            slot_index=slot_index,
-            game_path=game_path,
-            app_root=app_root,
-        )
-        if texture_path.exists() and is_ignored_hash(calculate_livery_hash(texture_path)):
-            return texture_path, thumbnail_path
+    normalized_model = normalize_model(model)
+    if empty_slot_template is not None:
+        texture_target = Path(empty_slot_template) / normalized_model / "tex.jpg"
+        thumbnail_target = Path(empty_slot_template) / normalized_model / "thumb.jpg"
+        if texture_target.exists() and thumbnail_target.exists():
+            return texture_target, thumbnail_target
     return None
 
 
 def clear_game_livery_slot(
     model: str,
     slot_index: int,
+    empty_slot_template: str | Path | None = None,
     game_path: str | Path | None = None,
     app_root: str | Path | None = None,
 ) -> tuple[Path, Path]:
@@ -627,6 +626,7 @@ def clear_game_livery_slot(
         model=model,
         game_path=game_path,
         app_root=app_root,
+        empty_slot_template=empty_slot_template,
     )
     if template_paths is None:
         raise ValueError(
