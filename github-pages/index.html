@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Running Train Livery Manager</title>
+  <meta name="description" content="Running Train Livery Manager is a livery management and editing helper for Running Train.">
+  <link rel="icon" href="./assets/images/RTL_icon.png">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main" data-i18n="skipLink">Skip to content</a>
+
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#home" aria-label="Running Train Livery Manager">
+        <img src="./assets/images/RTL_icon.png" alt="" class="brand-mark">
+        <span>
+          <strong>Running Train</strong>
+          <small>Livery Manager</small>
+        </span>
+      </a>
+
+      <div class="topbar-actions">
+        <nav class="nav" aria-label="Primary navigation" data-i18n-aria="navAria">
+          <a href="#features" data-i18n="navFeatures">Features</a>
+          <a href="#workflow" data-i18n="navWorkflow">Workflow</a>
+          <a href="https://github.com/Charles-Fan-1025/RTLiveryManager/releases" data-i18n="navDownload">Download</a>
+          <a href="https://github.com/Charles-Fan-1025/RTLiveryManager">GitHub</a>
+        </nav>
+        <div class="lang-switch" aria-label="Language" data-i18n-aria="langAria">
+          <button type="button" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-lang="zh-CN" aria-pressed="false">简</button>
+          <button type="button" data-lang="ja" aria-pressed="false">日</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="home" style="--hero-image:url('./assets/images/livery_management.png');">
+      <div class="hero-overlay"></div>
+      <div class="wrap hero-inner">
+        <div class="eyebrow" data-i18n="heroEyebrow">Hashiru Ressha / Running Train</div>
+        <h1 data-i18n="heroTitle">Manage liveries, prepare edits, and write them back to the game.</h1>
+        <p class="lead" data-i18n="heroLead">
+          Available in English, Simplified Chinese, and Japanese. This livery manager for Running Train imports, exports, edits, deletes, and writes saved liveries back into game slots. It also fixes and restores image aspect ratios so your painting tools can work without distortion.
+        </p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="https://github.com/Charles-Fan-1025/RTLiveryManager/releases">
+            <span data-i18n="downloadNow">Download Now</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5l7 7-7 7M5 12h14"/></svg>
+          </a>
+          <a class="button button-ghost" href="https://github.com/Charles-Fan-1025/RTLiveryManager">
+            <span data-i18n="viewGithub">View on GitHub</span>
+          </a>
+        </div>
+        <ul class="hero-points">
+          <li data-i18n="heroPointSlots">Livery slot management</li>
+          <li data-i18n="heroPointRatio">Aspect-ratio repair</li>
+          <li data-i18n="heroPointActions">Import, export, edit, delete</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 data-i18n="featuresTitle">Three Core Features</h2>
+          <p data-i18n="featuresLead">From your livery library to game slots and image editing helpers, common tasks live in one focused tool.</p>
+        </div>
+
+        <div class="grid cards">
+          <article class="card">
+            <img src="./assets/images/livery_management.png" alt="Livery management screen" data-i18n-alt="altLiveryManagement">
+            <h3 data-i18n="featureManageTitle">Livery Management</h3>
+            <p data-i18n="featureManageText">Build a livery library beyond the game's five-slot limit for each train type; import, export, edit, delete, and write selected liveries back to the game slots.</p>
+          </article>
+          <article class="card">
+            <img src="./assets/images/livery_editing.png" alt="Livery editing helper screen" data-i18n-alt="altEditing">
+            <h3 data-i18n="featureEditTitle">Editing Helper</h3>
+            <p data-i18n="featureEditText">Convert the blank livery files provided by the game to the correct aspect ratio for editing, then restore them to the original game format.</p>
+          </article>
+          <article class="card">
+            <img src="./assets/images/settings.png" alt="Settings screen" data-i18n-alt="altSettings">
+            <h3 data-i18n="featureSettingsTitle">Setup and Import</h3>
+            <p data-i18n="featureSettingsText">Configure the game path on first launch, switch languages, back up or restore files, and manually import liveries from the game.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="workflow">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 data-i18n="workflowTitle">Workflow</h2>
+          <p data-i18n="workflowLead">Configure the tool, import liveries, prepare images, and maintain settings in a simple sequence.</p>
+        </div>
+
+        <div class="split">
+          <figure class="media">
+            <img src="./assets/images/inital_prompt.png" alt="Initial setup prompt" data-i18n-alt="altInitialPrompt">
+          </figure>
+          <div class="copy">
+            <p class="step" data-i18n="workflowStep1">01 / Initial Setup</p>
+            <h3 data-i18n="workflowStep1Title">Choose the path and working mode on first launch</h3>
+            <p data-i18n="workflowStep1Text">The app asks which mode you want to use. In full-feature mode, it detects the game files automatically and lets you set the path manually if needed.</p>
+          </div>
+        </div>
+
+        <div class="split reverse">
+          <figure class="media">
+            <img src="./assets/images/import_livery.png" alt="Import livery window" data-i18n-alt="altImport">
+          </figure>
+          <div class="copy">
+            <p class="step" data-i18n="workflowStep2">02 / Import and Manage</p>
+            <h3 data-i18n="workflowStep2Title">Add new liveries to your library</h3>
+            <p data-i18n="workflowStep2Text">Name, train type, and livery file are required; thumbnails are optional. After import, equip, remove, or right-click manage liveries from the main page.</p>
+          </div>
+        </div>
+
+        <div class="split">
+          <figure class="media">
+            <img src="./assets/images/livery_editing_illustrated.png" alt="Livery editing diagram" data-i18n-alt="altDiagram">
+          </figure>
+          <div class="copy">
+            <p class="step" data-i18n="workflowStep3">03 / Editing Helper</p>
+            <h3 data-i18n="workflowStep3Title">Fix the ratio before editing in your painting tool</h3>
+            <p data-i18n="workflowStep3Text">The diagram shows how to convert game files to a usable aspect ratio, edit them elsewhere, and restore them as valid livery files.</p>
+          </div>
+        </div>
+
+        <div class="split reverse">
+          <figure class="media">
+            <img src="./assets/images/settings.png" alt="Settings screen" data-i18n-alt="altSettings">
+          </figure>
+          <div class="copy">
+            <p class="step" data-i18n="workflowStep4">04 / Maintain and Switch</p>
+            <h3 data-i18n="workflowStep4Title">Backups, restores, imports, and languages live here</h3>
+            <p data-i18n="workflowStep4Text">The settings page manages the game path, backup and restore actions, manual import, and language switching.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section run" id="run">
+      <div class="wrap run-inner">
+        <div>
+          <h2 data-i18n="runTitle">Make livery management smoother.</h2>
+          <p data-i18n="runLead">For installers, source code, and full instructions, visit the GitHub repository.</p>
+        </div>
+        <a class="button button-primary" href="https://github.com/Charles-Fan-1025/RTLiveryManager">
+          <span data-i18n="detailsLink">Learn More</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5l7 7-7 7M5 12h14"/></svg>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p data-i18n="footer">Running Train Livery Manager · GitHub Pages preview</p>
+    </div>
+  </footer>
+</body>
+</html>
