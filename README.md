@@ -2,7 +2,7 @@
 
 一款用于 `走ル列車 | Running Train` 的材质管理工具。
 
-![demo](./manual/assets/livery_management.png)
+![demo](./image_assets/livery_management.png)
 
 ## 功能
 
@@ -16,13 +16,14 @@
 
 ## 使用说明
 
-见 [使用说明](https://github.com/Charles-Fan-1025/RTLiveryManager/blob/master/manual/manual.md)
+见 [使用说明](https://github.com/Charles-Fan-1025/RTLiveryManager/blob/master/manual.md)
 
 ## 目录
 
 - `FrontEnd.py`：GUI 入口
 - `FileManage.py`：材质库与游戏文件管理后端
 - `ImageProcess.py`：图片处理后端
+- `SteamInteract.py`：Steam API 交互后端
 
 ## 运行
 
