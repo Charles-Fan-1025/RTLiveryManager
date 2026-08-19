@@ -1,42 +1,46 @@
+|[中文](https://github.com/Charles-Fan-1025/RTLiveryManager/blob/master/README-zh-cn.md)|[日本語](https://github.com/Charles-Fan-1025/RTLiveryManager/blob/master/README-ja-jp.md)|
+
 # Running Train Livery Manager
 
-一款用于 `走ル列車 | Running Train` 的材质管理工具。
+A livery management tool for **走ル列車 | Running Train**.
 
 ![demo](./image_assets/livery_management.png)
 
-## 功能
+## Features
 
-- 涂装管理
-  - 管理每个车型多于 5 个的涂装
-  - 导入、导出、编辑、删除涂装
-  - 将库中的涂装写入游戏槽位
-- 涂装编辑辅助功能
-  - 将游戏提供的空白涂装文件处理为正确长宽比，从而可以使用其他工具编辑而无需考虑拉伸形变
-  - 将编辑完的涂装文件还原为原大小
+- Livery Management
+  - Manage more than 5 liveries per train model
+  - Import, export, edit, and delete liveries
+  - Write liveries from the library into game slots
+- Livery Editing Assistance
+  - Convert the blank livery template provided by the game to the correct aspect ratio, so you can edit it with other tools without worrying about distortion
+  - Restore the edited livery file back to its original size
 
-## 使用说明
+## User Manual
 
-见 [使用说明](https://github.com/Charles-Fan-1025/RTLiveryManager/blob/master/manual.md)
+See [User Manual](https://github.com/Charles-Fan-1025/RTLiveryManager/blob/master/manual.md)
 
-## 目录
+## Directory Structure
 
-- `FrontEnd.py`：GUI 入口
-- `FileManage.py`：材质库与游戏文件管理后端
-- `ImageProcess.py`：图片处理后端
-- `SteamInteract.py`：Steam API 交互后端
+- `FrontEnd.py`: GUI entry point
+- `FileManage.py`: Backend for livery library and game file management
+- `ImageProcess.py`: Backend for image processing
+- `SteamInteract.py`: Backend for Steam API interaction
 
-## 运行
+## Running the Application
 
-从 [Releases](https://github.com/Charles-Fan-1025/RTLiveryManager/releases) 中直接下载可执行文件，或使用 python （依赖 pillow ）：
+Download the executable directly from [Releases](https://github.com/Charles-Fan-1025/RTLiveryManager/releases), or run with Python (requires Pillow):
 
-直接启动 GUI：
+Launch the GUI directly:
 
 ```powershell
 python FrontEnd.py
 ```
 
-图片处理模块也支持命令行调用，使用 `python ImageProcess.py -h` 获取帮助。
+The image processing module also supports command-line invocation. Use python ImageProcess.py -h for help.
 
-## 数据路径
+## Data Path
+The software stores data in `C://Users/<Username>/Documents/RunningTrainLivery/`
 
-软件会把数据存放在 `C://Users/<用户名>/Documents/RunningTrainLivery/`
+## AI Assistance Declearation
+This software was developed with the assistance from AI coding tools.

@@ -1,35 +1,35 @@
-# 初始设置
+# Initial Setup
 
-软件首次启动时，会弹出窗口询问希望的使用方式。
+When the software starts for the first time, a dialog will appear asking how you wish to use it.
 ![inital_prompt](./image_assets/inital_prompt.png)
-如果您选择 `使用完整功能` ，软件会自动检测游戏文件位置。如果这一步骤出错，你会被要求手动指定游戏文件位置。
-您可以日后在 `设置` 选项卡中指定 / 更改游戏路径。
+If you select `Full Function`, the software will automatically detect the game file location. If this step fails, you will be asked to specify the game file location manually.
+You can also specify or change the game path later in the `Settings` tab.
 
-如果选择 `使用完整功能` ，将会弹出弹窗询问是否备份已有涂装文件，以及从游戏导入涂装。建议您都选择 `是` 。
+If you choose `Full Function`, you will be prompted to back up existing livery files and to import liveries from the game. It is recommended to select `Yes` for both.
 
-# 涂装管理页面
+# Livery Management Tab
 
 ![livery_management](./image_assets/livery_management.png)
-这个界面用于管理游戏涂装槽和涂装列表。
-对涂装槽中的涂装 `点击鼠标左键` ，可以将其卸下。
-对涂装列表中的涂装 `点击鼠标左键` ，可以将其装备到涂装槽中。
-对涂装列表中的涂装 `点击鼠标右键` ，可以将其 `导出`, `编辑` 或 `删除` 。
+This interface is used to manage game livery slots and the livery library.
+- `Left-click` on a livery in a game slot to remove it from the slot.
+- `Left-click` on a livery in the livery list to equip it to an available game slot.
+- `Right-click` on a livery in the livery list to `Export`, `Edit`, or `Delete` it.
 
-要添加新涂装，请点击 `导入涂装` 。
+To add a new livery, click `Import Livery`.
 ![import_livery](./image_assets/import_livery.png)
-`名称` ， `车型` ， `涂装文件` 是必填项。 `缩略图` 可不填。
+`Name`, `Train Model`, and `Livery File` are required fields. `Thumbnail` is optional.
 
-涂装管理完成后，点击 `应用修改` ，涂装槽中的涂装将被写入游戏涂装文件。
+After finishing livery management, click `Apply Changes` to write the liveries in the slots to the game livery files.
 
-# 涂装编辑辅助页面
+# Livery Editing Helper Tab
 
 ![livery_editing](./image_assets/livery_editing.png)
-这个界面帮助将游戏涂装文件处理至正确的长宽比例，以及将本软件处理的正确长宽比例图片重新转换为游戏涂装文件。
-关于如何使用，请看这幅图解：
+This tab helps you convert the game's livery template to the correct aspect ratio for editing with other tools, and also restore a correctly proportioned image back to the game's livery file format.
+For a step‑by‑step guide, see this illustrated diagram:
 ![livery_editing_illustrated](./image_assets/livery_editing_illustrated.png)
-使用 `还原图片为涂装文件` 时，软件会询问是否将生成的图片添加到涂装列表中，请按需选择。
+When using `Restore image from livery file`, the software will ask whether to add the generated image to the livery list. Choose according to your needs.
 
-# 设置页面
+# Settings Tab
 
 ![settings](./image_assets/settings.png)
-在这里修改游戏文件路径、备份或恢复游戏涂装文件、手动从游戏中导入涂装以及在简体中文、英语、日语（机器翻译）中切换语言。
+Here you can change the game file path, back up or restore game livery files, manually import liveries from the game, and switch between Simplified Chinese, English, and Japanese (machine translation).
