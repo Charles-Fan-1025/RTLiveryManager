@@ -59,7 +59,7 @@
   "button_select_game_path": "ゲームファイルの場所を選択",
   "button_cancel": "キャンセル",
   "message_startup_disclaimer_title": "ご利用にあたって",
-  "message_startup_disclaimer_body": "本ソフトウェアは個人開発者によるオープンソースプロジェクトです。正しい使用または不適切な使用によって生じたいかなる結果についても、使用者自身が責任を負うものとします。\n\n使用前にゲームの塗装ファイルをバックアップすることを推奨します。",
+  "message_startup_disclaimer_body": "本ソフトウェアはMITライセンスのもとでオープンソースとして公開されています。「設定」-「ライセンス」でご確認いただけます。",
   "checkbox_never_remind": "今後表示しない",
   "message_dc85_title": "DC85 に関する注意",
   "message_dc85_body": "ゲームの制限により、DC85系の塗装は常に左右反転します。本ソフトウェアの不具合ではありません。",
@@ -99,7 +99,10 @@
   "message_language_saved": "言語設定を保存しました。",
   "button_language_save": "言語を保存",
   "button_language_refresh": "言語リストを更新",
+  "button_license": "ライセンス",
   "button_confirm": "決定",
+  "dialog_license": "ライセンス",
+  "message_license_failed_title": "ライセンスの読み込みに失敗しました",
   "setting_editor_only_mode": "塗装編集補助機能のみを使用する",
   "setting_use_game_path": "ゲームファイルの場所を有効にする"
 }

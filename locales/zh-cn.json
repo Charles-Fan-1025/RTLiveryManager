@@ -59,7 +59,7 @@
   "button_select_game_path": "选择游戏文件位置",
   "button_cancel": "取消",
   "message_startup_disclaimer_title": "使用提示",
-  "message_startup_disclaimer_body": "本软件是个人开发者开发的开源项目，正确或不当使用本软件产生的一切后果由使用者自行承担。\n\n建议您在使用前备份游戏涂装文件，以免丢失。\n\nYou can change language in 设置 tab if needed.",
+  "message_startup_disclaimer_body": "本软件遵循MIT许可证开源。可在“设置”-“许可证”中查看。",
   "checkbox_never_remind": "不再提醒",
   "message_dc85_title": "DC85 提示",
   "message_dc85_body": "由于游戏限制，DC85系涂装总会左右翻转，非本软件漏洞。",
@@ -99,7 +99,10 @@
   "message_language_saved": "语言设置已保存。",
   "button_language_save": "保存语言",
   "button_language_refresh": "刷新语言列表",
+  "button_license": "许可证",
   "button_confirm": "确定",
+  "dialog_license": "许可证",
+  "message_license_failed_title": "读取许可证失败",
   "setting_editor_only_mode": "仅使用涂装编辑辅助功能",
   "setting_use_game_path": "启用游戏文件位置"
 }

@@ -348,6 +348,12 @@ class LiveryManagerApp(tk.Tk):
         ttk.Label(self.settings_tab, text=self.t("label_storage_path")).grid(row=7, column=0, sticky="w", pady=(24, 0))
         ttk.Label(self.settings_tab, text=str(self.storage_paths.root)).grid(row=7, column=1, columnspan=4, sticky="w", padx=8, pady=(24, 0))
 
+        ttk.Button(
+            self.settings_tab,
+            text=self.t("button_license"),
+            command=self.show_license,
+        ).grid(row=8, column=1, sticky="w", padx=8, pady=(18, 0))
+
     def refresh_texts(self) -> None:
         self.title(self.t("app_title"))
         tabs = self.winfo_children()[0]
@@ -363,6 +369,46 @@ class LiveryManagerApp(tk.Tk):
         fm.save_settings(self.settings)
         self.locale.set_language(language)
         messagebox.showinfo(self.t("message_warning_title"), self.t("message_language_restart_hint"))
+
+    def show_license(self) -> None:
+        license_path = resource_path("LICENSE")
+        try:
+            license_text = license_path.read_text(encoding="utf-8")
+        except Exception as exc:
+            messagebox.showerror(
+                self.t("message_license_failed_title"),
+                str(exc),
+                parent=self,
+            )
+            return
+
+        dialog = tk.Toplevel(self)
+        dialog.title(self.t("dialog_license"))
+        set_window_icon(dialog)
+        dialog.geometry("760x560")
+        dialog.minsize(560, 380)
+        dialog.transient(self)
+
+        frame = ttk.Frame(dialog, padding=12)
+        frame.grid(row=0, column=0, sticky="nsew")
+        frame.columnconfigure(0, weight=1)
+        frame.rowconfigure(0, weight=1)
+        dialog.columnconfigure(0, weight=1)
+        dialog.rowconfigure(0, weight=1)
+
+        text = tk.Text(frame, wrap="word", height=24, width=84)
+        scrollbar = ttk.Scrollbar(frame, orient="vertical", command=text.yview)
+        text.configure(yscrollcommand=scrollbar.set)
+        text.grid(row=0, column=0, sticky="nsew")
+        scrollbar.grid(row=0, column=1, sticky="ns")
+        text.insert("1.0", license_text)
+        text.configure(state="disabled")
+
+        ttk.Button(
+            frame,
+            text=self.t("button_confirm"),
+            command=dialog.destroy,
+        ).grid(row=1, column=0, columnspan=2, sticky="e", pady=(10, 0))
 
     def _startup_checks(self) -> None:
         if self.settings.get("show_startup_disclaimer", True):

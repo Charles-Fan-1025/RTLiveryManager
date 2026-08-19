@@ -58,7 +58,7 @@
   "button_select_game_path": "Full Function",
   "button_cancel": "Cancel",
   "message_startup_disclaimer_title": "Usage Notice",
-  "message_startup_disclaimer_body": "This software is an open-source project developed by an individual developer. The developer shall not be held responsible for any consequences resulting from the use or misuse of this software.\n\nIt is recommended that you back up your game livery files before use to avoid loss.",
+  "message_startup_disclaimer_body": "This software is open source under the MIT License. You can view it in Settings - License.",
   "checkbox_never_remind": "Do not remind again",
   "message_dc85_title": "Notice for Series DC85",
   "message_dc85_body": "Due to game limitations, liveries for Series DC85 are always mirrored horizontally; this is not a software bug.",
@@ -98,7 +98,10 @@
   "message_language_saved": "Language setting saved.",
   "button_language_save": "Save Language",
   "button_language_refresh": "Refresh Language List",
+  "button_license": "License",
   "button_confirm": "Confirm",
+  "dialog_license": "License",
+  "message_license_failed_title": "Failed to Load License",
   "setting_editor_only_mode": "Use only livery editing helper",
   "setting_use_game_path": "Enable game file location"
 }
