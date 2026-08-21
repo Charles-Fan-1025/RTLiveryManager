@@ -1,1 +1,1 @@
-pyinstaller --onefile --windowed --icon .\RTL_icon.ico -n RTLiveryManager --add-data ".\RTL_icon.ico;." --add-data ".\RTL_icon.png;." --add-data "locales;locales" --add-data "LICENSE;." .\FrontEnd.py
+pyinstaller --onefile --windowed --icon .\RTL_icon.ico -n RTLiveryManager --add-data ".\RTL_icon.ico;." --add-data ".\RTL_icon.png;." --add-data "locales;locales" --add-data "LICENSE;." --add-data "empty_template;empty_template" .\FrontEnd.py
