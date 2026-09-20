@@ -211,6 +211,9 @@ class LiveryManagerApp(tk.Tk):
             canvas.configure(yscrollcommand=scrollbar.set)
             canvas.grid(row=0, column=0, sticky="nsew")
             scrollbar.grid(row=0, column=1, sticky="ns")
+            self._bind_library_mousewheel(library_area, canvas)
+            self._bind_library_mousewheel(canvas, canvas)
+            self._bind_library_mousewheel(inner, canvas)
             self.library_frames[model] = inner
 
         button_bar = ttk.Frame(self.manage_tab)
@@ -225,6 +228,40 @@ class LiveryManagerApp(tk.Tk):
                 fm.SUPPORTED_MODELS[event.widget.index("current")]
             ),
         )
+
+    def _bind_library_mousewheel(self, widget: tk.Misc, canvas: tk.Canvas) -> None:
+        widget.bind(
+            "<MouseWheel>",
+            lambda event, c=canvas: self._scroll_library(event, c),
+            add="+",
+        )
+        widget.bind(
+            "<Button-4>",
+            lambda event, c=canvas: self._scroll_library(event, c),
+            add="+",
+        )
+        widget.bind(
+            "<Button-5>",
+            lambda event, c=canvas: self._scroll_library(event, c),
+            add="+",
+        )
+
+    @staticmethod
+    def _scroll_library(event: tk.Event, canvas: tk.Canvas) -> str:
+        if getattr(event, "num", None) == 4:
+            units = -1
+        elif getattr(event, "num", None) == 5:
+            units = 1
+        else:
+            delta = getattr(event, "delta", 0)
+            if not delta:
+                return "break"
+            units = -int(delta / 120)
+            if units == 0:
+                units = -1 if delta > 0 else 1
+
+        canvas.yview_scroll(units, "units")
+        return "break"
 
     def _build_edit_tab(self) -> None:
         self.edit_tab.columnconfigure(1, weight=1)
@@ -685,8 +722,10 @@ class LiveryManagerApp(tk.Tk):
             for widget in card.winfo_children():
                 widget.bind("<Button-1>", lambda _event, item=record: self.mount_first_empty(item))
                 widget.bind("<Button-3>", lambda event, item=record: self.show_livery_menu(event, item))
+                self._bind_library_mousewheel(widget, container.master)
             card.bind("<Button-1>", lambda _event, item=record: self.mount_first_empty(item))
             card.bind("<Button-3>", lambda event, item=record: self.show_livery_menu(event, item))
+            self._bind_library_mousewheel(card, container.master)
 
     def unload_slot(self, model: str, slot_index: int) -> None:
         self.slot_assignments[model][slot_index] = None
